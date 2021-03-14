@@ -1,1 +1,6 @@
 site
+
+config_testes.txt
+And16.vhd
+Mux2Way.vhd
+TopLevel.vhd
