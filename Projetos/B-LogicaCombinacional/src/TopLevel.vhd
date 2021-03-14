@@ -42,3 +42,4 @@ begin
 		HEX0(6 downto 0) <= "0100100";
 		
 end rtl;
+
