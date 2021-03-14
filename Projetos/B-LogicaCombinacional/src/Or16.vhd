@@ -11,6 +11,6 @@ end entity;
 architecture arch of Or16 is
 begin
 
-	q <= a or b;
+	q <= b or a;
 
 end architecture;
