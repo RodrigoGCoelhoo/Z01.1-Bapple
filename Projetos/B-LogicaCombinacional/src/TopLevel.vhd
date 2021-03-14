@@ -21,7 +21,12 @@ entity TopLevel is
 	port(
 		CLOCK_50 : in  std_logic;
 		SW       : in  std_logic_vector(9 downto 0);
+		signal x	: buffer std_logic;
+		signal y	: buffer std_logic;
+		signal z	: buffer std_logic;
+		a 			: out std_logic;
 		LEDR     : out std_logic_vector(9 downto 0)
+		
 	);
 end entity;
 
@@ -33,11 +38,21 @@ architecture rtl of TopLevel is
 --------------
 -- signals
 --------------
-
+	
 ---------------
 -- implementacao
 ---------------
 begin
-          
+
+	x <= SW(0);
+	y <= SW(1);
+	z <= SW(2);
+	
+	a <= ((not((x and y) or y)) or (not(x and y and z)));
+	
+	
+	
+		
+	
 
 end rtl;
