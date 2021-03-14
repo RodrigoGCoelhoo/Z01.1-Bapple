@@ -18,12 +18,11 @@ use work.all;
 -- Entrada e saidas do bloco
 ----------------------------
 entity TopLevel is
-	port(
-		CLOCK_50 : in  std_logic;
-		SW       : in  std_logic_vector(9 downto 0);
-		HEX0     : out std_logic_vector(6 downto 0);
-		LEDR     : out std_logic_vector(0 downto 0)
-	);
+    port(
+        SW      : in  std_logic_vector(9 downto 0);
+        HEX0    : out std_logic_vector(6 downto 0); -- 7seg0
+        LEDR    : out std_logic_vector(9 downto 0)
+    );
 end entity;
 
 ----------------------------
@@ -39,6 +38,7 @@ architecture rtl of TopLevel is
 -- implementacao
 ---------------
 begin
-   HEX0 <= "1001011";
-	
+		
+		HEX0(6 downto 0) <= "0100100";
+		
 end rtl;
