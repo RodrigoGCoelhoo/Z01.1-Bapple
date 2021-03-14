@@ -20,13 +20,13 @@
     "user-github": "rodrigogcoelhoo"
   },
   "aluno-5": {
+    "nome": "Paulo Wook Kim",
+    "email-insper": "paulowk@al.insper.edu.br",
+    "user-github": "paulokim1"
+  },
+  "aluno-6": {
     "nome": "Raphael Lahiry de Barros",
     "email-insper": "raphaellcmb@al.insper.edu.br",
     "user-github": "Lahiry"
-  },
-  "aluno-6": {
-    "nome": "",
-    "email-insper": "",
-    "user-github": ""
   }
 }
