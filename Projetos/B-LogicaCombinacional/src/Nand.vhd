@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity nand_z01 is
    port(
-          a : in  std_logic;
+         a : in  std_logic;
 	      b : in  std_logic;
 	      q : out std_logic
    );
