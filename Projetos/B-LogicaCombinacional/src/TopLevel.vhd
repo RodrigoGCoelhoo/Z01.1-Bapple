@@ -26,7 +26,6 @@ entity TopLevel is
 		signal z	: buffer std_logic;
 		a 			: out std_logic;
 		LEDR     : out std_logic_vector(9 downto 0)
-		
 	);
 end entity;
 
@@ -49,10 +48,6 @@ begin
 	z <= SW(2);
 	
 	a <= ((not((x and y) or y)) or (not(x and y and z)));
-	
-	
-	
-		
-	
 
 end rtl;
+
