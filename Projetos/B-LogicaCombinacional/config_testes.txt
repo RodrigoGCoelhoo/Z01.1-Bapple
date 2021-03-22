@@ -31,9 +31,6 @@ sevenSeg.vhd
 
 ##### conceito A e B
 
-<<<<<<< HEAD
 ConceitoB.vhd
-=======
->>>>>>> 2b0372c5d575421def659ad0fd71f34c7f54fa85
 #ConceitoA.vhd
-ConceitoB.vhd
+

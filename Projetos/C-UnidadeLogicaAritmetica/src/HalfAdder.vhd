@@ -22,4 +22,6 @@ architecture rtl of HalfAdder is
 begin
   -- Implementação vem aqui!
 
+  
+
 end architecture;
