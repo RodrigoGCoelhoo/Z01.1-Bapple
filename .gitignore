@@ -5,3 +5,6 @@ And16.vhd
 Mux2Way.vhd
 TopLevel.vhd
 Or16.vhd
+
+__pycache__
+vunit_out
