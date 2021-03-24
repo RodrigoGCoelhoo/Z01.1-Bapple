@@ -20,9 +20,8 @@ architecture rtl of HalfAdder is
   -- utilizados nesse modulo.
 
 begin
+
   soma <= a xor b;
   vaium <= a and b;
-
-  
 
 end architecture;
