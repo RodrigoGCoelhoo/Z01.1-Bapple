@@ -97,5 +97,28 @@ architecture  rtl OF alu is
 
 begin
   -- Implementação vem aqui!
+  
+  -- Verifica se precisa zerar as entradas
+  zeraX: zerador16 PORT MAP (zx, x, zxout);
+  zeraY: zerador16 PORT MAP (zy, y, zyout);
+  
+  -- Verifica se precisa inverter a saida
+  inverteX: inversor16 PORT MAP (nx, zxout, nxout);
+  inverteY: inversor16 PORT MAP (ny, zyout, nyout);
+  
+  -- Faz ambas as combinacoes And e Add
+  xANDy: And16 PORT MAP (nxout, nyout, andout);
+  xADDy: Add16 PORT MAP (nxout, nyout, adderout);
+  
+  -- Mux16
+  mux: Mux16 PORT MAP (andout, adderout, f, muxout);
+  
+  -- Verifica se precisa inverter a saida
+  invertOUT: inversor16 PORT MAP (no, muxout, precomp);
+  
+  -- Comparador para verificar se saida zero ou neg
+  comparador: comparador16 PORT MAP (precomp, zr, ng);
+  
+  saida <= precomp;
 
 end architecture;
