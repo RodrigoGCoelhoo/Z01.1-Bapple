@@ -28,16 +28,18 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity ALU is
 	port (
-			x,y:   in STD_LOGIC_VECTOR(15 downto 0); -- entradas de dados da ALU
-			zx:    in STD_LOGIC;                     -- zera a entrada x
-			nx:    in STD_LOGIC;                     -- inverte a entrada x
-			zy:    in STD_LOGIC;                     -- zera a entrada y
-			ny:    in STD_LOGIC;                     -- inverte a entrada y
-			f:     in STD_LOGIC;                     -- se 0 calcula x & y, senão x + y
-			no:    in STD_LOGIC;                     -- inverte o valor da saída
-			zr:    out STD_LOGIC;                    -- setado se saída igual a zero
-			ng:    out STD_LOGIC;                    -- setado se saída é negativa
-			saida: out STD_LOGIC_VECTOR(15 downto 0) -- saída de dados da ALU
+			x,y:   		in STD_LOGIC_VECTOR(15 downto 0); -- entradas de dados da ALU
+			zx:    		in STD_LOGIC;                     -- zera a entrada x
+			nx:    		in STD_LOGIC;                     -- inverte a entrada x
+			zy:    		in STD_LOGIC;                     -- zera a entrada y
+			ny:    		in STD_LOGIC;                     -- inverte a entrada y
+			f:     		in STD_LOGIC_VECTOR(1 downto 0);  -- se 0 calcula x & y, senão x + y
+			no:    		in STD_LOGIC;                     -- inverte o valor da saída
+			zr:    		out STD_LOGIC;                    -- setado se saída igual a zero
+			ng:    		out STD_LOGIC;                    -- setado se saída é negativa
+			carryout: 	out STD_LOGIC;					  -- carryout da soma 
+			saida: 		out STD_LOGIC_VECTOR(15 downto 0) -- saída de dados da ALU
+
 	);
 end entity;
 
@@ -64,6 +66,7 @@ architecture  rtl OF alu is
 		port(
 			a   :  in STD_LOGIC_VECTOR(15 downto 0);
 			b   :  in STD_LOGIC_VECTOR(15 downto 0);
+			carry: out STD_LOGIC;
 			q   : out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
@@ -84,16 +87,19 @@ architecture  rtl OF alu is
     );
 	end component;
 
-	component Mux16 is
-		port (
+	component Mux4Way16 is
+		port ( 
 			a:   in  STD_LOGIC_VECTOR(15 downto 0);
 			b:   in  STD_LOGIC_VECTOR(15 downto 0);
-			sel: in  STD_LOGIC;
+			c:   in  STD_LOGIC_VECTOR(15 downto 0);
+			d:   in  STD_LOGIC_VECTOR(15 downto 0);
+			sel: in  STD_LOGIC_VECTOR(1 downto 0);
 			q:   out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
-   SIGNAL zxout,zyout,nxout,nyout,andout,adderout,muxout,precomp: std_logic_vector(15 downto 0);
+   SIGNAL zxout,zyout,nxout,nyout,andout,adderout,muxout,precomp, xXORy: std_logic_vector(15 downto 0);
+   SIGNAL carry: std_logic;
 
 begin
   -- Implementação vem aqui!
@@ -108,17 +114,19 @@ begin
   
   -- Faz ambas as combinacoes And e Add
   xANDy: And16 PORT MAP (nxout, nyout, andout);
-  xADDy: Add16 PORT MAP (nxout, nyout, adderout);
+  xADDy: Add16 PORT MAP (nxout, nyout, carry, adderout);
+  xXORy <= nxout xor nyout;
   
   -- Mux16
-  mux: Mux16 PORT MAP (andout, adderout, f, muxout);
+  mux: Mux4Way16 PORT MAP (andout, adderout,xXORy, "0000000000000000",f, muxout);
   
   -- Verifica se precisa inverter a saida
   invertOUT: inversor16 PORT MAP (no, muxout, precomp);
   
   -- Comparador para verificar se saida zero ou neg
   comparador: comparador16 PORT MAP (precomp, zr, ng);
-  
+
+  carryout <= carry when f = "01";
   saida <= precomp;
 
 end architecture;
