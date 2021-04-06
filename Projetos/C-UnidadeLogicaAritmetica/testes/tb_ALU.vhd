@@ -170,6 +170,32 @@ begin
       wait for 200 ps;
       assert(outZR = '0' and outNG = '1' and outSaida= "1111111111111111" and outcarry='0')  report "Falha em teste: 19" severity error;
 
+      --Teste: 20
+      inX <= "0000000000000000"; inY <= "1111111111111111";
+      inZX <= '0'; inNX <= '0'; inZY <= '0'; inNY <= '0'; inF <= "10"; inNO <= '0';
+      wait for 200 ps;
+      assert(outZR = '0' and outNG = '1' and outSaida= "1111111111111111" and outcarry='0')  report "Falha em teste: 20" severity error;
+
+      --Teste: 21
+      inX <= "0000000000000000"; inY <= "1111111111111111";
+      inZX <= '0'; inNX <= '0'; inZY <= '1'; inNY <= '0'; inF <= "10"; inNO <= '0';
+      wait for 200 ps;
+      assert(outZR = '1' and outNG = '0' and outSaida= "0000000000000000" and outcarry='0')  report "Falha em teste: 21" severity error;
+
+      --Teste: 22
+      inX <= "0000000000000000"; inY <= "1111111111111111";
+      inZX <= '1'; inNX <= '1'; inZY <= '1'; inNY <= '1'; inF <= "10"; inNO <= '0';
+      wait for 200 ps;
+      assert(outZR = '1' and outNG = '0' and outSaida= "0000000000000000" and outcarry='0')  report "Falha em teste: 22" severity error;
+
+      --Teste: 23
+      inX <= "0000000000000000"; inY <= "1111111111111111";
+      inZX <= '1'; inNX <= '0'; inZY <= '1'; inNY <= '1'; inF <= "10"; inNO <= '1';
+      wait for 200 ps;
+      assert(outZR = '1' and outNG = '0' and outSaida= "0000000000000000" and outcarry='0')  report "Falha em teste: 23" severity error;
+
+
+
     test_runner_cleanup(runner); -- Simulacao acaba aqui
 
   end process;
