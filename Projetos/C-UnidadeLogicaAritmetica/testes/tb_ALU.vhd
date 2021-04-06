@@ -57,10 +57,10 @@ begin
     test_runner_setup(runner, runner_cfg);
 
       -- Teste: 1
-      inX <= "0000000000000001"; inY <= "0000000000000001";
+      inX <= "1000000000000000"; inY <= "1000000000000000";
       inZX <= '0'; inNX <= '0'; inZY <= '0'; inNY <= '0'; inF <= "01"; inNO <= '0';
       wait for 200 ps;
-      assert(outZR = '0' and outNG = '0' and outSaida= "0000000000000010")  report "Falha em teste: 1" severity error;
+      assert(outZR = '1' and outNG = '0' and outSaida= "0000000000000000" and outcarry = '1')  report "Falha em teste: 1" severity error;
 
       -- Teste: 2
       --inX <= "0000000000000000"; inY <= "1111111111111111";

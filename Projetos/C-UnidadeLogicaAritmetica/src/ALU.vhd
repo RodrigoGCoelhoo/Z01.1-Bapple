@@ -33,7 +33,7 @@ entity ALU is
 			nx:    		in STD_LOGIC;                     -- inverte a entrada x
 			zy:    		in STD_LOGIC;                     -- zera a entrada y
 			ny:    		in STD_LOGIC;                     -- inverte a entrada y
-			f:     		in STD_LOGIC_VECTOR(1 downto 0);  -- se 0 calcula x & y, senão x + y
+			f:     		in STD_LOGIC_VECTOR(1 downto 0);  -- se 0 calcula x & y, senão x + y, ou x xor y
 			no:    		in STD_LOGIC;                     -- inverte o valor da saída
 			zr:    		out STD_LOGIC;                    -- setado se saída igual a zero
 			ng:    		out STD_LOGIC;                    -- setado se saída é negativa
@@ -66,7 +66,7 @@ architecture  rtl OF alu is
 		port(
 			a   :  in STD_LOGIC_VECTOR(15 downto 0);
 			b   :  in STD_LOGIC_VECTOR(15 downto 0);
-			carry: out STD_LOGIC;
+			saidacarry: out STD_LOGIC;
 			q   : out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
@@ -99,7 +99,7 @@ architecture  rtl OF alu is
 	end component;
 
    SIGNAL zxout,zyout,nxout,nyout,andout,adderout,muxout,precomp, xXORy: std_logic_vector(15 downto 0);
-   SIGNAL carry: std_logic;
+   SIGNAL carrySignal: std_logic;
 
 begin
   -- Implementação vem aqui!
@@ -114,7 +114,7 @@ begin
   
   -- Faz ambas as combinacoes And e Add
   xANDy: And16 PORT MAP (nxout, nyout, andout);
-  xADDy: Add16 PORT MAP (nxout, nyout, carry, adderout);
+  xADDy: Add16 PORT MAP (nxout, nyout, carrySignal, adderout);
   xXORy <= nxout xor nyout;
   
   -- Mux16
@@ -126,7 +126,8 @@ begin
   -- Comparador para verificar se saida zero ou neg
   comparador: comparador16 PORT MAP (precomp, zr, ng);
 
-  carryout <= carry when f = "01";
+  carryout <= carrySignal when f = "01";
+  --carryout <= '0';
   saida <= precomp;
 
 end architecture;

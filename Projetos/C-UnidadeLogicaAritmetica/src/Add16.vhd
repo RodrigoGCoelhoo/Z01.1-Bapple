@@ -161,6 +161,7 @@ begin
     c => carry14,
     soma => q(15),
     vaium => saidacarry
+    --vaium => OPEN
   );
   
 end architecture;
