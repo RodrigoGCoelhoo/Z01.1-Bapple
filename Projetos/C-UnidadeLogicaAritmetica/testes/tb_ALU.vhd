@@ -17,18 +17,18 @@ architecture tb of tb_ALU is
 
 component ALU is
 	port (
-		x,y:   		in STD_LOGIC_VECTOR(15 downto 0); -- entradas de dados da ALU
+      x,y:   		in STD_LOGIC_VECTOR(15 downto 0); -- entradas de dados da ALU
 			zx:    		in STD_LOGIC;                     -- zera a entrada x
 			nx:    		in STD_LOGIC;                     -- inverte a entrada x
 			zy:    		in STD_LOGIC;                     -- zera a entrada y
 			ny:    		in STD_LOGIC;                     -- inverte a entrada y
-			dir: 	    in STD_LOGIC;					  -- se vai shiftar para direita ou para esquerda
-			size: 	    in STD_LOGIC_VECTOR(2 downto 0);  -- o quanto vai shiftar
+			dir: 	    in STD_LOGIC;					            -- se vai shiftar para direita ou para esquerda
+			size: 	  in STD_LOGIC_VECTOR(2 downto 0);  -- o quanto vai shiftar
 			f:     		in STD_LOGIC_VECTOR(1 downto 0);  -- se 0 calcula x & y, senão x + y, ou x xor y
 			no:    		in STD_LOGIC;                     -- inverte o valor da saída
 			zr:    		out STD_LOGIC;                    -- setado se saída igual a zero
 			ng:    		out STD_LOGIC;                    -- setado se saída é negativa
-			carryout: 	out STD_LOGIC;					  -- carryout da soma 
+			carryout: out STD_LOGIC;					          -- carryout da soma 
 			saida: 		out STD_LOGIC_VECTOR(15 downto 0) -- saída de dados da ALU
 	);
 end component;
@@ -203,12 +203,25 @@ begin
       inX <= "0000000000000000"; inY <= "1111111111111111";
       inZX <= '0'; inNX <= '1'; inZY <= '1'; inNY <= '1'; inF <= "01"; inNO <= '1'; dirS <= '0'; sizeS <= "001"; 
       wait for 200 ps;
-      --saida seria 0000000000000001 sem shiftar
+      assert(outZR = '0' and outNG = '0' and outSaida= "0000000000000010" and outcarry= '1')  report "Falha em teste: 24" severity error;
 
-      assert(outZR = '0' and outNG = '0' and outSaida= "0000000000000001" and outcarry= '1')  report "Falha em teste: 24" severity error;
+      -- Teste: 25
+      inX <= "0000000000000000"; inY <= "1111111111111111";
+      inZX <= '0'; inNX <= '1'; inZY <= '0'; inNY <= '0'; inF <= "01"; inNO <= '1'; dirS <= '0'; sizeS <= "101";
+      wait for 200 ps;
+      assert(outZR = '0' and outNG = '0' and outSaida= "0000000000100000" and outcarry = '1')  report "Falha em teste: 25" severity error;
 
+      -- Teste: 26
+      inX <= "0000000000000000"; inY <= "1111111111111111";
+      inZX <= '0'; inNX <= '0'; inZY <= '0'; inNY <= '0'; inF <= "01"; inNO <= '0' ;dirS <= '1'; sizeS <= "111";
+      wait for 200 ps;
+      assert(outZR = '0' and outNG = '0' and outSaida= "0000000111111111" and outcarry = '0') report "Falha em teste: 26" severity error;
 
-
+      -- Teste: 27
+      inX <= "0000000000000000"; inY <= "1111111111111111";
+      inZX <= '1'; inNX <= '1'; inZY <= '1'; inNY <= '0'; inF <= "01"; inNO <= '0';dirS <= '1'; sizeS <= "101";
+      wait for 200 ps;
+      assert(outZR = '0' and outNG = '0' and outSaida= "0000011111111111" and outcarry= '0') report "Falha em teste: 3" severity error;
 
     test_runner_cleanup(runner); -- Simulacao acaba aqui
 

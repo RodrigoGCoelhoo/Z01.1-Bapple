@@ -110,8 +110,7 @@ architecture  rtl OF alu is
 	end component;
 
    SIGNAL zxout,zyout,nxout,nyout,andout,adderout,muxout,precomp, xXORy, precompShiftado: std_logic_vector(15 downto 0);
-   SIGNAL carrySignal, dirS: std_logic;
-   SIGNAL sizeS: std_logic_vector(2 downto 0);
+   SIGNAL carrySignal: std_logic;
 
 begin
   -- Implementação vem aqui!
@@ -139,7 +138,7 @@ begin
   invertOUT: inversor16 PORT MAP (no, muxout, precomp);
   
   -- Shifta os casos
-  precompS: BarrelShifter16 PORT MAP (precomp, dirS, sizeS, precompShiftado);
+  precompS: BarrelShifter16 PORT MAP (precomp, dir, size, precompShiftado);
 
   
   -- Comparador para verificar se saida zero ou neg
