@@ -17,22 +17,25 @@ architecture tb of tb_ALU is
 
 component ALU is
 	port (
-			x,y:   in STD_LOGIC_VECTOR(15 downto 0); -- entradas de dados da ALU
-			zx:    in STD_LOGIC;                     -- zera a entrada x
-			nx:    in STD_LOGIC;                     -- inverte a entrada x
-			zy:    in STD_LOGIC;                     -- zera a entrada y
-			ny:    in STD_LOGIC;                     -- inverte a entrada y
-			f:     in STD_LOGIC_VECTOR(1 downto 0);                     -- se 0 calcula x & y, senão x + y
-			no:    in STD_LOGIC;                     -- inverte o valor da saída
-      zr:    out STD_LOGIC;                    -- setado se saída igual a zero
-      carryout: 	out STD_LOGIC;					  -- carryout da soma 
-			ng:    out STD_LOGIC;                    -- setado se saída é negativa
-			saida: out STD_LOGIC_VECTOR(15 downto 0) -- saída de dados da ALU
+		x,y:   		in STD_LOGIC_VECTOR(15 downto 0); -- entradas de dados da ALU
+			zx:    		in STD_LOGIC;                     -- zera a entrada x
+			nx:    		in STD_LOGIC;                     -- inverte a entrada x
+			zy:    		in STD_LOGIC;                     -- zera a entrada y
+			ny:    		in STD_LOGIC;                     -- inverte a entrada y
+			dir: 	    in STD_LOGIC;					  -- se vai shiftar para direita ou para esquerda
+			size: 	    in STD_LOGIC_VECTOR(2 downto 0);  -- o quanto vai shiftar
+			f:     		in STD_LOGIC_VECTOR(1 downto 0);  -- se 0 calcula x & y, senão x + y, ou x xor y
+			no:    		in STD_LOGIC;                     -- inverte o valor da saída
+			zr:    		out STD_LOGIC;                    -- setado se saída igual a zero
+			ng:    		out STD_LOGIC;                    -- setado se saída é negativa
+			carryout: 	out STD_LOGIC;					  -- carryout da soma 
+			saida: 		out STD_LOGIC_VECTOR(15 downto 0) -- saída de dados da ALU
 	);
 end component;
 
    signal  inX, inY : STD_LOGIC_VECTOR(15 downto 0);
-   signal  inZX, inNX, inZY, inNY, inNO, outZR, outNG, outcarry: STD_LOGIC;
+   signal  dirS, inZX, inNX, inZY, inNY, inNO, outZR, outNG, outcarry: STD_LOGIC;
+   signal  sizeS: STD_LOGIC_VECTOR(2 downto 0);
    signal  inF: STD_LOGIC_VECTOR(1 downto 0);
    signal  outSaida : STD_LOGIC_VECTOR(15 downto 0);
 
@@ -41,6 +44,8 @@ begin
 	mapping: ALU port map(
     x  => inX,
     y  => inY,
+    dir => dirS,
+    size => sizeS,
     zx => inZx,
     nx => inNx,
     zy => inZy,
@@ -193,6 +198,15 @@ begin
       inZX <= '1'; inNX <= '0'; inZY <= '1'; inNY <= '1'; inF <= "10"; inNO <= '1';
       wait for 200 ps;
       assert(outZR = '1' and outNG = '0' and outSaida= "0000000000000000" and outcarry='0')  report "Falha em teste: 23" severity error;
+
+      --Teste: 24
+      inX <= "0000000000000000"; inY <= "1111111111111111";
+      inZX <= '0'; inNX <= '1'; inZY <= '1'; inNY <= '1'; inF <= "01"; inNO <= '1'; dirS <= '0'; sizeS <= "001"; 
+      wait for 200 ps;
+      --saida seria 0000000000000001 sem shiftar
+
+      assert(outZR = '0' and outNG = '0' and outSaida= "0000000000000001" and outcarry= '1')  report "Falha em teste: 24" severity error;
+
 
 
 

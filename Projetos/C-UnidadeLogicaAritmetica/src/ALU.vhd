@@ -33,6 +33,8 @@ entity ALU is
 			nx:    		in STD_LOGIC;                     -- inverte a entrada x
 			zy:    		in STD_LOGIC;                     -- zera a entrada y
 			ny:    		in STD_LOGIC;                     -- inverte a entrada y
+			dir: 	    in STD_LOGIC;					  -- se vai shiftar para direita ou para esquerda
+			size: 	    in STD_LOGIC_VECTOR(2 downto 0);  -- o quanto vai shiftar
 			f:     		in STD_LOGIC_VECTOR(1 downto 0);  -- se 0 calcula x & y, senão x + y, ou x xor y
 			no:    		in STD_LOGIC;                     -- inverte o valor da saída
 			zr:    		out STD_LOGIC;                    -- setado se saída igual a zero
@@ -98,8 +100,18 @@ architecture  rtl OF alu is
 		);
 	end component;
 
-   SIGNAL zxout,zyout,nxout,nyout,andout,adderout,muxout,precomp, xXORy: std_logic_vector(15 downto 0);
-   SIGNAL carrySignal: std_logic;
+	component BarrelShifter16 is
+		port (
+			a:    in  STD_LOGIC_VECTOR(15 downto 0);   -- input vector
+			dir:  in  std_logic;                       -- 0=>left 1=>right
+			size: in  std_logic_vector(2 downto 0);    -- shift amount
+			q:    out STD_LOGIC_VECTOR(15 downto 0)
+		);
+	end component;
+
+   SIGNAL zxout,zyout,nxout,nyout,andout,adderout,muxout,precomp, xXORy, precompShiftado: std_logic_vector(15 downto 0);
+   SIGNAL carrySignal, dirS: std_logic;
+   SIGNAL sizeS: std_logic_vector(2 downto 0);
 
 begin
   -- Implementação vem aqui!
@@ -111,6 +123,9 @@ begin
   -- Verifica se precisa inverter a saida
   inverteX: inversor16 PORT MAP (nx, zxout, nxout);
   inverteY: inversor16 PORT MAP (ny, zyout, nyout);
+
+  --Verifica se precisa shiftar
+
   
   -- Faz ambas as combinacoes And e Add
   xANDy: And16 PORT MAP (nxout, nyout, andout);
@@ -123,11 +138,15 @@ begin
   -- Verifica se precisa inverter a saida
   invertOUT: inversor16 PORT MAP (no, muxout, precomp);
   
+  -- Shifta os casos
+  precompS: BarrelShifter16 PORT MAP (precomp, dirS, sizeS, precompShiftado);
+
+  
   -- Comparador para verificar se saida zero ou neg
-  comparador: comparador16 PORT MAP (precomp, zr, ng);
+  comparador: comparador16 PORT MAP (precompShiftado, zr, ng);
 
   carryout <= carrySignal when f = "01";
-  --carryout <= '0';
-  saida <= precomp;
+
+  saida <= precompShiftado;
 
 end architecture;
