@@ -11,7 +11,7 @@ entity FlipFlopD is
 		d:      in std_logic;
 		clear:  in std_logic;
 		preset: in std_logic;
-		q:      out std_logic := '0'
+		q:      out std_logic := '0' -- estado inicial da saída
 	);
 end entity;
 
@@ -19,9 +19,11 @@ architecture arch of FlipFlopD is
 
 begin
 
-	process(clock, clear) begin
+	process(clock, clear, preset) begin
 		if (clear = '1') then
 			q <='0';
+		elsif (preset = '1') then
+			q <='1';
 		elsif (rising_edge(CLOCK)) then
 			q<=D;
 		end if;
