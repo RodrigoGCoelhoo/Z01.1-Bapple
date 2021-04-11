@@ -56,9 +56,23 @@ architecture arch of Ram512 is
 	end component;
 
 	signal load0, load1, load2, load3, load4, load5, load6, load7 : STD_LOGIC;
-	signal output0, output1, output2, output3, output4, output5, output6, output7 : STD_LOGIC_VECTOR(15 downto 0);
+	signal output0, output1, output2, output3, output4, output5, output6, output7, outputmux : STD_LOGIC_VECTOR(15 downto 0);
 
 begin
+	dmux: DMux8Way PORT MAP (load,address(8 downto 6),load0,load1,load2,load3,load4,load5,load6,load7);
+
+	ram0: Ram64 PORT MAP (clock,input,load0,address(5 downto 0),output0);
+	ram1: Ram64 PORT MAP (clock,input,load1,address(5 downto 0),output1);
+	ram2: Ram64 PORT MAP (clock,input,load2,address(5 downto 0),output2);
+	ram3: Ram64 PORT MAP (clock,input,load3,address(5 downto 0),output3);
+	ram4: Ram64 PORT MAP (clock,input,load4,address(5 downto 0),output4);
+	ram5: Ram64 PORT MAP (clock,input,load5,address(5 downto 0),output5);
+	ram6: Ram64 PORT MAP (clock,input,load6,address(5 downto 0),output6);
+	ram7: Ram64 PORT MAP (clock,input,load7,address(5 downto 0),output7);
+
+	mux: Mux8Way16 PORT MAP (output0,output1,output2,output3,output4,output5,output6,output7,address(8 downto 6),outputmux);
+
+	output <= outputmux;
 
 
 end architecture;
