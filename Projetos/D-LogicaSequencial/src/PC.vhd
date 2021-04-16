@@ -26,7 +26,7 @@ end entity;
 
 architecture arch of PC is
 
- signal muxIn, muxOut, registerOut, incOut : std_logic_vector(15 downto 0);
+ signal muxIn, muxLoadOut, muxResetOut, registerOut, incOut : std_logic_vector(15 downto 0);
 
   component Inc16 is
       port(
@@ -56,24 +56,15 @@ architecture arch of PC is
 begin
 
   inc: Inc16 PORT MAP(registerOut, incOut);
-
+ 
   muxIn <= registerOut when increment = '0' else incOut;
 
-  reg16: Register16 PORT MAP(clock, muxOut, '1', registerOut);
+  reg16: Register16 PORT MAP(clock, muxResetOut, '1', registerOut);
 
-  mux: Mux16 PORT MAP(muxIn, input, load, muxOut);
+  muxLoad: Mux16 PORT MAP(muxIn, input, load, muxLoadOut);
 
+  muxReset: Mux16 PORT MAP(muxLoadOut, x"0000", reset, muxResetOut);
 
-  process(clock) begin
-    if reset = '1' then
-        output <= "0000000000000000";
-    elsif load = '1' then
-        output <= input;
-    elsif increment = '1' then
-        output <= incOut;
-    else
-        output <= registerOut;
-    end if;
-  end process;
+ output <= registerOut;
 
 end architecture;
