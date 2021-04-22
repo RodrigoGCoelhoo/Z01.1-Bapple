@@ -20,4 +20,3 @@ begin
 	q3 <= a when sel = "11" else '0';
 	
 end architecture;
-
