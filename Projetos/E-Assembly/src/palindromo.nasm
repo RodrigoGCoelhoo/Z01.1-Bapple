@@ -21,3 +21,28 @@
 ; 
 
  
+leaw $0, %A
+movw %A, (%A)
+
+leaw $10, %A
+movw (%A), %D
+leaw $14, %A
+subw %D, (%A), %D
+leaw $END, %A
+jne %D
+nop 
+
+leaw $11, %A
+movw (%A), %D
+leaw $13, %A
+subw %D, (%A), %D
+leaw $END, %A
+jne %D
+nop 
+
+leaw $1, %A
+movw %A, %D
+leaw $0, %A
+movw %D, (%A)
+
+END:
