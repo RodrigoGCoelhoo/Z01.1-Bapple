@@ -9,3 +9,20 @@
 
 
 
+leaw $21185, %A
+movw (%A), %D
+notw %D
+leaw $496, %A 
+;faz A or D, bit a bit
+orw %A, %D, %D 
+leaw $510, %A
+andw %A, %D, %D 
+leaw $21184, %A
+movw %D, (%A)
+
+
+
+
+
+
+
