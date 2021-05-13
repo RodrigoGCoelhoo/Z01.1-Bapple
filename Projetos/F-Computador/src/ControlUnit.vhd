@@ -40,5 +40,21 @@ begin
   f <= instruction(17) and instruction(8);
   muxAm <= not (instruction(17) and instruction(3));
 
+  zy <= instruction(10) and instruction(17);
+  ny <= instruction(9) and instruction(17);
+  no <= instruction(7) and instruction(17);
+
+  --LoadPC
+
+  LoadPC <= '1' when (instruction(17) and instruction(2) and instruction(1) and instruction(0)) else --JMP
+              '1' when (instruction(17) and instruction(0) and instruction(2) and not(instruction(0)) and zr and ng) else -- JLE
+              '1' when (instruction(17) and instruction(0) and instruction(2) and not(instruction(1)) and not(zr)) else -- JNE
+              '1' when (instruction(17) and instruction(0) and instruction(1) and not(instruction(2)) and not(zr) and ng) else --JL
+              '1' when (instruction(17) and instruction(0) and not(instruction(1)) and not(instruction(2)) and not(ng)) else --JGE
+              '1' when (instruction(17) and not(instruction(0)) and instruction(1) and not(instruction(2)) and zr and not(ng)) else --JE
+              '1' when (instruction(17) and not(instruction(0)) and instruction(2) and not(instruction(1)) and not(zr) and not(ng)) else --JG 
+              '0';
+
+
 
 end architecture;
