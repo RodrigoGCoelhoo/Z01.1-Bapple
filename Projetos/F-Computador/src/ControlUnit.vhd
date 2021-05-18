@@ -30,31 +30,29 @@ architecture arch of ControlUnit is
 
 begin
 
+  --tanto  o bit 17 quanto o bit 4 tem que ser 1
   loadD <= instruction(17) and instruction(4);
+  --tanto o bit 17 quanto o bit 5 tem que ser 1
   loadM <= instruction(17) and instruction(5);
-  loadA <= not instruction(17) or (instruction(17) and instruction(3));
-  muxALUI_A <= not instruction(17);
-  zx <= instruction(17) and instruction(12);
+  loadA <= not(instruction(17)) or (instruction(17) and instruction(3));
+  --tem que verificar o bit 17
+  muxALUI_A <= not(instruction(17));
+  --tem que receber o bit 12
+  zx <= (instruction(12)) and (instruction(17));
+  nx <= instruction(11) and instruction(17);
+  muxAM <= instruction(13) and instruction(17);
+  f <= instruction(8) and instruction(17);
   
-  nx <= instruction(17) and instruction(11);
-  f <= instruction(17) and instruction(8);
-  muxAm <= not (instruction(17) and instruction(3));
-
   zy <= instruction(10) and instruction(17);
   ny <= instruction(9) and instruction(17);
   no <= instruction(7) and instruction(17);
 
-  --LoadPC
-
-  LoadPC <= '1' when (instruction(17) and instruction(2) and instruction(1) and instruction(0)) else --JMP
-              '1' when (instruction(17) and instruction(0) and instruction(2) and not(instruction(0)) and zr and ng) else -- JLE
-              '1' when (instruction(17) and instruction(0) and instruction(2) and not(instruction(1)) and not(zr)) else -- JNE
-              '1' when (instruction(17) and instruction(0) and instruction(1) and not(instruction(2)) and not(zr) and ng) else --JL
-              '1' when (instruction(17) and instruction(0) and not(instruction(1)) and not(instruction(2)) and not(ng)) else --JGE
-              '1' when (instruction(17) and not(instruction(0)) and instruction(1) and not(instruction(2)) and zr and not(ng)) else --JE
-              '1' when (instruction(17) and not(instruction(0)) and instruction(2) and not(instruction(1)) and not(zr) and not(ng)) else --JG 
-              '0';
-
-
+  LoadPC <=  (instruction(17) and instruction(2) and instruction(1) and instruction(0)) or --JMP
+              (instruction(17) and instruction(1) and instruction(2) and not(instruction(0)) and (zr or ng)) or -- JLE
+              (instruction(17) and instruction(0) and instruction(2) and not(instruction(1)) and not(zr)) or -- JNE
+              (instruction(17) and not(instruction(0)) and instruction(2) and not(instruction(1)) and not(zr) and ng) or --JL
+              (instruction(17) and instruction(0) and instruction(1) and not(instruction(2)) and not(ng)) or --JGE
+              (instruction(17) and not(instruction(0)) and instruction(1) and not(instruction(2)) and zr and not(ng)) or --JE
+              (instruction(17) and not(instruction(2)) and instruction(0) and not(instruction(1)) and not(zr) and not(ng)); -- JG
 
 end architecture;
