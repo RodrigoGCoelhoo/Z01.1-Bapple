@@ -15,8 +15,9 @@ entity ControlUnit is
 		instruction                 : in STD_LOGIC_VECTOR(17 downto 0);  -- instrução para executar
 		zr,ng                       : in STD_LOGIC;                      -- valores zr(se zero) e
                                                                      -- ng (se negativo) da ALU
-		muxALUI_A                   : out STD_LOGIC;                     -- mux que seleciona entre
-                                                                     -- instrução  e ALU para reg. A
+		muxALUI_AD                   : out STD_LOGIC;                     -- mux que seleciona entre instrução  e ALU para dmux que seleiona reg. A ou reg. D
+    dmuxALUI_AD                  : out STD_LOGIC;
+                                                                     
 		muxAM                       : out STD_LOGIC;                     -- mux que seleciona entre
                                                                      -- reg. A e Mem. RAM para ALU
                                                                      -- A  e Mem. RAM para ALU
@@ -31,12 +32,15 @@ architecture arch of ControlUnit is
 begin
 
   --tanto  o bit 17 quanto o bit 4 tem que ser 1
-  loadD <= instruction(17) and instruction(4);
+  loadD <= (not(instruction(17)) and not(instruction(16))) or (instruction(17) and instruction(4));
   --tanto o bit 17 quanto o bit 5 tem que ser 1
   loadM <= instruction(17) and instruction(5);
-  loadA <= not(instruction(17)) or (instruction(17) and instruction(3));
+  loadA <= (not(instruction(17)) and instruction(16)) or (instruction(17) and instruction(3));
+
   --tem que verificar o bit 17
-  muxALUI_A <= not(instruction(17));
+  muxALUI_AD <= not(instruction(17));
+  dmuxALUI_AD <= instruction(16);
+
   --tem que receber o bit 12
   zx <= (instruction(12)) and (instruction(17));
   nx <= instruction(11) and instruction(17);
