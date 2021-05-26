@@ -89,6 +89,7 @@ public class Parser {
      */
     public CommandType commandType(String command) {
         /* TODO: implementar */
+
     	return null;
     }
 
@@ -122,7 +123,10 @@ public class Parser {
      */
     public String[] instruction(String command) {
         /* TODO: implementar */
-    	return null;
+        command = command.trim(); // remove os espaços do inicio e do fim da string
+        command = command.replace(" ", ","); // troca todos os espaços por virgula
+        String[] array = command.split(","); // Separa em diferentes strings dentro da variável array
+    	return array;
     }
 
 
