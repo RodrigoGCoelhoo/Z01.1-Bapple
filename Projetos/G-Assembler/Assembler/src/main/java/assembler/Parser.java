@@ -134,7 +134,17 @@ public class Parser {
      */
     public String label(String command) {
         /* TODO: implementar */
-    	return null;
+        String simbolo = "";
+        int contador = 0;
+        
+        for (int i = 0; i < command.length(); i++) {
+            if (command.charAt(i) == ':'){
+                return simbolo;
+            } else {
+                simbolo += command.charAt(i);
+            }
+        }
+    return simbolo;
     }
 
     /**
