@@ -58,8 +58,12 @@ public class Assemble {
                 /* TODO: implementar */
                 // deve verificar se tal label já existe na tabela,
                 // se não, deve inserir. Caso contrário, ignorar.
+                if (table.contains(label) == false){
+                    table.addEntry(label, romAddress);
+                }
+            } else {
+                romAddress += 1;
             }
-            romAddress++;
         }
         parser.close();
 
@@ -78,12 +82,16 @@ public class Assemble {
                     // deve verificar se tal símbolo já existe na tabela,
                     // se não, deve inserir associando um endereço de
                     // memória RAM a ele.
+                    if (table.contains(symbol) == false){
+                        table.addEntry(symbol,ramAddress);
+                    }
                 }
-            }
+            } ramAddress += 1;
         }
         parser.close();
         return table;
     }
+
 
     /**
      * Segundo passo para a geração do código de máquina
