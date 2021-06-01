@@ -5,6 +5,9 @@
 
 package assembler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Traduz mnemônicos da linguagem assembly para códigos binários da arquitetura Z0.
  */
@@ -16,8 +19,94 @@ public class Code {
      * @return Opcode (String de 4 bits) com código em linguagem de máquina para a instrução.
      */
     public static String dest(String[] mnemnonic) {
-        /* TODO: implementar */
-    	return "";
+        String A = "0001";
+        String D = "0010";
+        String M = "0100";
+        String JMP = "0000";
+        String destino = "";
+        int size = mnemnonic.length;
+
+        if (size == 1) {
+            destino = "0000";
+        }
+
+        else if (size == 2) {
+            switch (mnemnonic[1]) {
+                case "%A":
+                    destino = A;
+                    break;
+                case "%D":
+                    destino = D;
+                    break;
+                case "(%A)":
+                    destino = M;
+            }
+        }
+
+        else if (size == 3) {
+            switch (mnemnonic[2]) {
+                case "%A":
+                    destino = A;
+                    break;
+                case "%D":
+                    destino = D;
+                    break;
+                case "(%A)":
+                    destino = M;
+            }
+        }
+
+        else if (size == 4) {
+            String destino_um = "";
+            String destino_dois = "";
+            if (mnemnonic[0] == "movw") {
+                switch (mnemnonic[2]) {
+                    case "%A":
+                        destino_um = A;
+                        break;
+                    case "%D":
+                        destino_um = D;
+                        break;
+                    case "(%A)":
+                        destino_um = M;
+                }
+                switch (mnemnonic[3]) {
+                    case "%A":
+                        destino_dois = A;
+                        break;
+                    case "%D":
+                        destino_dois = D;
+                        break;
+                    case "(%A)":
+                        destino_dois = M;
+                }
+                if (destino_um == A & destino_dois == D) {
+                    destino = "0011";
+                } else if (destino_um == A & destino_dois == M) {
+                    destino = "0101";
+                } else if (destino_um == D & destino_dois == M) {
+                    destino = "0110";
+                }
+            }    
+            else {
+                switch (mnemnonic[3]) {
+                    case "%D":
+                        destino = D;
+                        break;
+                    case "%A":
+                        destino = A;
+                        break;
+                    case "(%A)":
+                        destino = M;
+                }
+            }
+        }
+
+        else if (size == 5) {
+            destino = "0111";
+        }
+
+        return destino;
     }
 
     /**
@@ -26,8 +115,232 @@ public class Code {
      * @return Opcode (String de 7 bits) com código em linguagem de máquina para a instrução.
      */
     public static String comp(String[] mnemnonic) {
-        /* TODO: implementar */
-    	return "";
+        String operacao = "";
+
+        if (mnemnonic[0] == "jmp" | mnemnonic[0] == "je" | mnemnonic[0] == "jne" | mnemnonic[0] == "jg" | mnemnonic[0] == "jge" | mnemnonic[0] == "jl" | mnemnonic[0] == "jle") {
+            operacao = "000001100";
+        }
+
+        else {
+            switch (mnemnonic[0]) {
+                case "movw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            operacao = "000110000";
+                            break;
+                        case "%D":
+                            operacao = "000001100";
+                            break;
+                        case "(%A)":
+                            operacao = "001110000";
+                    }
+                    break;
+                case "addw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            switch (mnemnonic[2]) {
+                                case "%D":
+                                    operacao = "000000010";
+                                    break;
+                                case "$1":
+                                    operacao = "000110111";
+                            }
+                            break;
+                        case "%D":
+                            switch (mnemnonic[2]) {
+                                case "(%A)":
+                                    operacao = "001000010";
+                                    break;
+                                case "$1":
+                                    operacao = "000011111";
+                                    break;
+                                case "%A":
+                                    operacao = "000000010";
+                            }
+                            break;
+                        case "(%A)":
+                            switch (mnemnonic[2]) {
+                                case "$1":
+                                    operacao = "001110111";
+                                    break;
+                                case "%D":
+                                    operacao = "001000010";
+                            }
+                            break;
+                        case "$1":
+                            switch (mnemnonic[2]) {
+                                case "(%A)":
+                                    operacao = "001110111";
+                                    break;
+                                case "%D":
+                                    operacao = "000011111";
+                                    break;
+                                case "%A":
+                                    operacao = "000110111";
+                            }
+                    }
+                    break;
+                case "subw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            switch (mnemnonic[2]) {
+                                case "%D":
+                                    operacao = "000000111";
+                                    break;
+                                case "$1":
+                                    operacao = "000110010";
+                            }
+                            break;
+                        case "%D":
+                            switch (mnemnonic[2]) {
+                                case "(%A)":
+                                    operacao = "001010011";
+                                    break;
+                                case "$1":
+                                    operacao = "000011110";
+                                    break;
+                                case "%A":
+                                    operacao = "000010011";
+                            }
+                            break;
+                        case "(%A)":
+                            switch (mnemnonic[2]) {
+                                case "$1":
+                                    operacao = "001110010";
+                                    break;
+                                case "%D":
+                                    operacao = "001000111";
+                            }
+                    }
+                    break;
+                case "rsubw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            switch (mnemnonic[2]) {
+                                case "%D":
+                                    operacao = "000010011";
+                            }
+                            break;
+                        case "%D":
+                            switch (mnemnonic[2]) {
+                                case "(%A)":
+                                    operacao = "001000111";
+                                    break;
+                                case "%A":
+                                    operacao = "000000111";
+                            }
+                            break;
+                        case "(%A)":
+                            switch (mnemnonic[2]) {
+                                case "%D":
+                                    operacao = "001010011";
+                            }
+                            break;
+                        case "$1":
+                            switch (mnemnonic[2]) {
+                                case "%A":
+                                    operacao = "000110010";
+                                    break;
+                                case "%D":
+                                    operacao = "000011110";
+                                    break;
+                                case "(%A)":
+                                    operacao = "001110010";
+                            }
+                    }
+                    break;
+                case "incw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            operacao = "000110111";
+                            break;
+                        case "%D":
+                            operacao = "000011111";
+                            break;
+                        case "(%A)":
+                            operacao = "001110111";
+                    }
+                    break;
+                case "decw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            operacao = "000110010";
+                            break;
+                        case "%D":
+                            operacao = "000001110";
+                            break;
+                        case "(%A)":
+                            operacao = "001110010";
+                    }
+                    break;
+                case "notw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            operacao = "000110001";
+                            break;
+                        case "%D":
+                            operacao = "000001101";
+                    }
+                    break;
+                case "negw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            operacao = "000110011";
+                            break;
+                        case "%D":
+                            operacao = "000001111";
+                    }
+                    break;
+                case "andw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            switch (mnemnonic[2]) {
+                                case "%D":
+                                    operacao = "000000000";
+                            }
+                            break;
+                        case "%D":
+                            switch (mnemnonic[2]) {
+                                case "(%A)":
+                                    operacao = "001000000";
+                                    break;
+                                case "%A":
+                                    operacao = "000000000";
+                            }
+                            break;
+                        case "(%A)":
+                            switch (mnemnonic[2]) {
+                                case "%D":
+                                    operacao = "001000000";
+                            }
+                    }
+                    break;
+                case "orw":
+                    switch (mnemnonic[1]) {
+                        case "%A":
+                            switch (mnemnonic[2]) {
+                                case "%D":
+                                    operacao = "000010101";
+                            }
+                            break;
+                        case "%D":
+                            switch (mnemnonic[2]) {
+                                case "(%A)":
+                                    operacao = "001010101";
+                                    break;
+                                case "%A":
+                                    operacao = "000010101";
+                            }
+                            break;
+                        case "(%A)":
+                            switch (mnemnonic[2]) {
+                                case "%D":
+                                    operacao = "001010101";
+                            }
+                    }
+            }
+        }
+        return operacao;
     }
 
     /**
@@ -36,8 +349,50 @@ public class Code {
      * @return Opcode (String de 3 bits) com código em linguagem de máquina para a instrução.
      */
     public static String jump(String[] mnemnonic) {
-        /* TODO: implementar */
-    	return "";
+
+        String code = "";
+
+        List<String> jmpOps = new ArrayList<>();
+        jmpOps.add("jmp");
+        jmpOps.add("je");
+        jmpOps.add("jne");
+        jmpOps.add("jg");
+        jmpOps.add("jge");
+        jmpOps.add("jl");
+        jmpOps.add("jle");
+
+        if (!jmpOps.contains(mnemnonic[0])){
+            code = "000";
+        }
+
+        else if (mnemnonic[0] == "jmp"){
+            code =  "111";
+        }
+
+        else if (mnemnonic[0] == "je"){
+            code = "010";
+        }
+
+        else if (mnemnonic[0] == "jne"){
+            code = "101";
+        }
+
+        else if (mnemnonic[0] == "jg"){
+            code = "001";
+        }
+
+        else if (mnemnonic[0] == "jge"){
+            code = "011";
+        }
+
+        else if (mnemnonic[0] == "jl"){
+            code = "100";
+        }
+
+        else if (mnemnonic[0] == "jle"){
+            code =  "110";
+        }
+        return code;
     }
 
     /**
@@ -46,8 +401,18 @@ public class Code {
      * @return Valor em binário (String de 15 bits) representado com 0s e 1s.
      */
     public static String toBinary(String symbol) {
-        /* TODO: implementar */
-    	return "";
+
+        int decimal = Integer.parseInt(symbol);
+        String binario = Integer.toBinaryString(decimal);
+
+        if (binario.length() < 16){
+            StringBuilder add = new StringBuilder();
+            for (int i = 0; i < 16 - binario.length(); i++){
+                add.append("0");
+            }
+            binario = add + binario;
+        }
+        return binario;
     }
 
 }
