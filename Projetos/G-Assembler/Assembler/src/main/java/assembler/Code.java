@@ -115,14 +115,32 @@ public class Code {
      * @return Opcode (String de 7 bits) com código em linguagem de máquina para a instrução.
      */
     public static String comp(String[] mnemnonic) {
-        String operacao = "";
+        String operacao = "000000000";
 
-        if (mnemnonic[0] == "jmp" | mnemnonic[0] == "je" | mnemnonic[0] == "jne" | mnemnonic[0] == "jg" | mnemnonic[0] == "jge" | mnemnonic[0] == "jl" | mnemnonic[0] == "jle") {
-            operacao = "000001100";
-        }
-
-        else {
             switch (mnemnonic[0]) {
+
+                case "jmp":
+                    operacao = "000001100";
+                    break;
+                case "je":
+                    operacao = "000001100";
+                    break;
+                case "jne":
+                    operacao = "000001100";
+                    break;
+                case "jg":
+                    operacao = "000001100";
+                    break;
+                case "jge":
+                    operacao = "000001100";
+                    break;
+                case "jl":
+                    operacao = "000001100";
+                    break;
+                case "jle":
+                    operacao = "000001100";
+                    break;
+
                 case "movw":
                     switch (mnemnonic[1]) {
                         case "%A":
@@ -133,6 +151,12 @@ public class Code {
                             break;
                         case "(%A)":
                             operacao = "001110000";
+                            break;
+                        case "$1":
+                            operacao = "000111111";
+                            break;
+                        case "$0":
+                            operacao = "000101010";
                     }
                     break;
                 case "addw":
@@ -296,7 +320,7 @@ public class Code {
                         case "%A":
                             switch (mnemnonic[2]) {
                                 case "%D":
-                                    operacao = "000000000";
+                                    return "000000000";
                             }
                             break;
                         case "%D":
@@ -339,7 +363,7 @@ public class Code {
                             }
                     }
             }
-        }
+
         return operacao;
     }
 
@@ -350,49 +374,24 @@ public class Code {
      */
     public static String jump(String[] mnemnonic) {
 
-        String code = "";
-
-        List<String> jmpOps = new ArrayList<>();
-        jmpOps.add("jmp");
-        jmpOps.add("je");
-        jmpOps.add("jne");
-        jmpOps.add("jg");
-        jmpOps.add("jge");
-        jmpOps.add("jl");
-        jmpOps.add("jle");
-
-        if (!jmpOps.contains(mnemnonic[0])){
-            code = "000";
+        switch (mnemnonic[0]) {
+            case "jmp":
+                return "111";
+            case "je":
+                return "010";
+            case "jne":
+                return "101";
+            case "jg":
+                return "001";
+            case "jge":
+                return "011";
+            case "jl":
+                return "100";
+            case "jle":
+                return "110";
+            default:
+                return "000";
         }
-
-        else if (mnemnonic[0] == "jmp"){
-            code =  "111";
-        }
-
-        else if (mnemnonic[0] == "je"){
-            code = "010";
-        }
-
-        else if (mnemnonic[0] == "jne"){
-            code = "101";
-        }
-
-        else if (mnemnonic[0] == "jg"){
-            code = "001";
-        }
-
-        else if (mnemnonic[0] == "jge"){
-            code = "011";
-        }
-
-        else if (mnemnonic[0] == "jl"){
-            code = "100";
-        }
-
-        else if (mnemnonic[0] == "jle"){
-            code =  "110";
-        }
-        return code;
     }
 
     /**
