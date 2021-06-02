@@ -111,14 +111,25 @@ public class Assemble {
          * seguindo o instruction set
          */
         while (parser.advance()){
+            Code code = new Code();
             switch (parser.commandType(parser.command())){
                 /* TODO: implementar */
                 case C_COMMAND:
-                break;
-            case A_COMMAND:
-                break;
-            default:
-                continue;
+                    instruction = "10";
+                    instruction = instruction + code.comp(parser.instruction(parser.command())) +code.dest(parser.instruction(parser.command())) + code.jump(parser.instruction(parser.command()));
+                    break;
+                case A_COMMAND:
+                    instruction = "00";
+                    try {
+                        instruction = instruction + code.toBinary(parser.symbol(parser.command()));
+                    }
+                    catch ( Exception string) {
+                        instruction = instruction + code.toBinary(table.getAddress(parser.symbol(parser.command())).toString());
+
+                    }
+                    break;
+                default:
+                    continue;
             }
             // Escreve no arquivo .hack a instrução
             if(outHACK!=null) {
