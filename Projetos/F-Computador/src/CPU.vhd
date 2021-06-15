@@ -30,6 +30,15 @@ architecture arch of CPU is
       );
   end component;
 
+  component Dmux16 is
+    port (
+      a:  in STD_LOGIC_VECTOR(15 downto 0);
+      sel: in STD_LOGIC;
+      q0:  out STD_LOGIC_VECTOR(15 downto 0);
+      q1:  out STD_LOGIC_VECTOR(15 downto 0)
+    );
+  end component;
+
   component ALU is
     port (
       x,y:   in STD_LOGIC_VECTOR(15 downto 0);
@@ -71,13 +80,15 @@ architecture arch of CPU is
       zr,ng                       : in STD_LOGIC;
       muxALUI_A                   : out STD_LOGIC;
       muxAM                       : out STD_LOGIC;
+      dmux_as                     : out STD_LOGIC;
       zx, nx, zy, ny, f, no       : out STD_LOGIC;
-      loadA, loadD, loadM, loadPC : out STD_LOGIC
+      loadA, loadD, loadM, loadPC, loadS : out STD_LOGIC
       );
   end component;
 
   signal c_muxALUI_A: STD_LOGIC;
   signal c_muxAM: STD_LOGIC;
+  signal c_dmuxas: STD_LOGIC;
   signal c_zx: STD_LOGIC;
   signal c_nx: STD_LOGIC;
   signal c_zy: STD_LOGIC;
@@ -87,13 +98,18 @@ architecture arch of CPU is
   signal c_loadA: STD_LOGIC;
   signal c_loadD: STD_LOGIC;
   signal c_loadPC: STD_LOGIC;
+  signal c_loadS: STD_LOGIC;
   signal c_zr: std_logic := '0';
   signal c_ng: std_logic := '0';
 
   signal s_muxALUI_Aout: STD_LOGIC_VECTOR(15 downto 0);
+  signal s_DmuxS: STD_LOGIC_VECTOR(15 downto 0);
+  signal s_DmuxA: STD_LOGIC_VECTor(15 downto 0);
   signal s_muxAM_out: STD_LOGIC_VECTOR(15 downto 0);
+  signal s_muxAS_out: STD_LOGIC_VECTOR(15 downto 0);
   signal s_regAout: STD_LOGIC_VECTOR(15 downto 0);
   signal s_regDout: STD_LOGIC_VECTOR(15 downto 0);
+  signal s_regSout: STD_LOGIC_VECTOR(15 downto 0);
   signal s_ALUout: STD_LOGIC_VECTOR(15 downto 0);
 
   signal s_pcout: STD_LOGIC_VECTOR(15 downto 0);
@@ -102,21 +118,27 @@ begin
 
   ula: ALU PORT MAP (s_regDout, s_muxAM_out, c_zx, c_nx, c_zy, c_ny, c_f, c_no, c_zr, c_ng, s_ALUout);
  
- control_unit: ControlUnit PORT MAP (instruction, c_zr, c_ng, c_muxALUI_A, c_muxAM, c_zx, c_nx, c_zy, c_ny, c_f, c_no, c_loadA, c_loadD, writeM, c_loadPC);
+ control_unit: ControlUnit PORT MAP (instruction, c_zr, c_ng, c_muxALUI_A, c_muxAM,c_dmuxas,c_zx, c_nx, c_zy, c_ny, c_f, c_no, c_loadA, c_loadD, writeM, c_loadPC,c_loadS);
  
  muxALUI_A: Mux16 PORT MAP (s_ALUout, instruction(15 downto 0), c_muxALUI_A, s_muxALUI_Aout);
+
+ deMuxAB : Dmux16 PORT MAP (s_muxALUI_Aout,c_dmuxas,s_DmuxA,s_DmuxS);
  
- reg_A: Register16 PORT MAP (clock, s_muxALUI_Aout, c_loadA, s_regAout);
+ reg_A: Register16 PORT MAP (clock, s_DmuxA, c_loadA, s_regAout);
+
+ reg_S : Register16 PORT MAP (clock, s_DmuxS, c_loadS, s_regSout);
+
+ muxAS : Mux16 PORT MAP (s_regAout,s_regSout,c_dmuxas,s_muxAS_out);
  
- muxAM: Mux16 PORT MAP (s_regAout, inM, c_muxAM, s_muxAM_out);
+ muxAM: Mux16 PORT MAP (s_muxAS_out, inM, c_muxAM, s_muxAM_out);
  
  reg_D: Register16 PORT MAP (clock, s_ALUout, c_loadD, s_regDout);
  
- pece: pc PORT MAP (clock, '1', c_loadPC, reset, s_regAout, s_pcout);
+ pece: pc PORT MAP (clock, '1', c_loadPC, reset, s_muxAS_out, s_pcout);
  
  outM <= s_ALUout;
  
- addressM <= s_regAout(14 downto 0);
+ addressM <= s_muxAS_out(14 downto 0);
  
  pcout <= s_pcout(14 downto 0);
 
